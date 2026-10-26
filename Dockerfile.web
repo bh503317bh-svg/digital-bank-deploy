@@ -1,0 +1,19 @@
+FROM node:20-alpine AS h5-app
+WORKDIR /src
+COPY digital-bank-h5-app/package.json ./
+RUN npm install
+COPY digital-bank-h5-app/ ./
+RUN npm run build
+
+FROM node:20-alpine AS h5-admin
+WORKDIR /src
+COPY digital-bank-h5-admin/package.json ./
+RUN npm install
+COPY digital-bank-h5-admin/ ./
+RUN npm run build
+
+FROM nginx:1.27-alpine
+COPY digital-bank-deploy/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY --from=h5-app /src/dist /usr/share/nginx/html/app
+COPY --from=h5-admin /src/dist /usr/share/nginx/html/admin
+EXPOSE 80

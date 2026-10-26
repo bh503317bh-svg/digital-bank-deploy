@@ -1,0 +1,65 @@
+name: digital-bank
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: digital-bank-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-wecode_root_pass}
+      MYSQL_USER: ${MYSQL_USER:-wecode}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wecode_pass}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-wecode_root_pass}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  core:
+    build:
+      context: ..
+      dockerfile: digital-bank-core/Dockerfile
+    container_name: digital-bank-core
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: ${MYSQL_USER:-wecode}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-wecode_pass}
+      JWT_SECRET: ${JWT_SECRET:-wecode-bank-demo-secret-change-me}
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ..
+      dockerfile: digital-bank-backend/Dockerfile
+    container_name: digital-bank-backend
+    environment:
+      CORE_URL: http://core:8001
+      SELF_URL: http://127.0.0.1:8080
+      JWT_SECRET: ${JWT_SECRET:-wecode-bank-demo-secret-change-me}
+    depends_on:
+      - core
+
+  web:
+    build:
+      context: ..
+      dockerfile: digital-bank-deploy/Dockerfile.web
+    container_name: bank-nginx
+    ports:
+      - "8088:80"
+    depends_on:
+      - backend
+    networks:
+      - default
+      - miru_net
+
+volumes:
+  mysql_data:
+
+networks:
+  miru_net:
+    external: true
+    name: miru_net

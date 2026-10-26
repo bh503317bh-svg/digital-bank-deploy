@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS bank_us CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS bank_cf CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS bank_dp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS bank_ac CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+GRANT ALL PRIVILEGES ON bank_us.* TO 'wecode'@'%';
+GRANT ALL PRIVILEGES ON bank_cf.* TO 'wecode'@'%';
+GRANT ALL PRIVILEGES ON bank_dp.* TO 'wecode'@'%';
+GRANT ALL PRIVILEGES ON bank_ac.* TO 'wecode'@'%';
+FLUSH PRIVILEGES;
