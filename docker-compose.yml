@@ -40,6 +40,8 @@ services:
       CORE_URL: http://core:8001
       SELF_URL: http://127.0.0.1:8080
       JWT_SECRET: ${JWT_SECRET:-wecode-bank-demo-secret-change-me}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-v4-pro}
     depends_on:
       - core
 
